@@ -4,7 +4,8 @@
   "description": "Proyecto de bienes raises",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index",
+    "server": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -25,5 +26,8 @@
   "homepage": "https://github.com/Raul220/nodejs_bienesraices_udemy#readme",
   "dependencies": {
     "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   }
 }
