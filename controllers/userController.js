@@ -5,6 +5,7 @@ const loginForm = (req, res) => {
 
 const registryForm = (req, res) => {
     res.render('auth/registry', {
+        page: 'Crear cuenta'
     })
 }
 
