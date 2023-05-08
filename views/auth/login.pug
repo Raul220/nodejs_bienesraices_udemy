@@ -1,3 +1,6 @@
 div
     h2.text-center Login
-    p(id='text') Start Section
+    if(authenticated)
+        p User authenticated
+    else
+        p Start section
