@@ -1,9 +1,14 @@
 const loginForm = (req, res) => {
     res.render('auth/login', {
-        authenticated: true
+    })
+}
+
+const registryForm = (req, res) => {
+    res.render('auth/registry', {
     })
 }
 
 export {
-    loginForm
+    loginForm,
+    registryForm
 }
