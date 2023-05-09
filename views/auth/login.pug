@@ -3,3 +3,19 @@ extends ../layout/index
 block content
     div
         h2.text-center.text-2xl.font-extrabold= page
+        
+        .mt-8.mx-auto.max-w-md
+            .bg-white.py-8.px-4.shadow
+                form.space-y-5
+                    div
+                        label.block.text-sm.uppercase.text-gray-500.mb-3.font-bold(for="name") Nombre
+                        input#name.w-full.py-2.px-3.border.border-gray-300.rounded-md.placehoder-gray-400(placeholder= 'Nombre' type='text' name='name') 
+                    div
+                        label.block.text-sm.uppercase.text-gray-500.mb-3.font-bold(for="email") Correo
+                        input#email.w-full.py-2.px-3.border.border-gray-300.rounded-md.placehoder-gray-400(placeholder= 'Correo' type='email' name='email') 
+                    div
+                        label.block.text-sm.uppercase.text-gray-500.mb-3.font-bold(for="password") Contraseña
+                        input#password.w-full.py-2.px-3.border.border-gray-300.rounded-md.placehoder-gray-400(placeholder= 'Contraseña' type='password' name='password') 
+                    div
+                        label.block.text-sm.uppercase.text-gray-500.mb-3.font-bold(for="confirm_password") Repetir Contraseña
+                        input#confirm_password.w-full.py-2.px-3.border.border-gray-300.rounded-md.placehoder-gray-400(placeholder= 'Repetir Contraseña' type='password' name='confirm_password') 
