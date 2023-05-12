@@ -1,6 +1,6 @@
 const loginForm = (req, res) => {
     res.render('auth/login', {
-        page: 'Iniciar sección'
+        page: 'Iniciar sesión'
     })
 }
 
@@ -10,7 +10,14 @@ const registryForm = (req, res) => {
     })
 }
 
+const forgotPasswordForm = (req, res) => {
+    res.render('auth/forgot-password', {
+        page: 'Recuperar contraseña'
+    })
+}
+
 export {
     loginForm,
-    registryForm
+    registryForm,
+    forgotPasswordForm
 }
