@@ -1,28 +1,26 @@
+import User from "../models/User.js";
+
 const loginForm = (req, res) => {
-    res.render('auth/login', {
-        page: 'Iniciar sesión'
-    })
-}
+  res.render("auth/login", {
+    page: "Iniciar sesión",
+  });
+};
 
 const registryForm = (req, res) => {
-    res.render('auth/registry', {
-        page: 'Crear cuenta'
-    })
-}
+  res.render("auth/registry", {
+    page: "Crear cuenta",
+  });
+};
 
-const registry = (req, res) => {
-    console.log(req.body)
-}
+const registry = async (req, res) => {
+  const user = await User.create(req.body);
+  res.json(user);
+};
 
 const forgotPasswordForm = (req, res) => {
-    res.render('auth/forgot-password', {
-        page: 'Recuperar contraseña'
-    })
-}
+  res.render("auth/forgot-password", {
+    page: "Recuperar contraseña",
+  });
+};
 
-export {
-    loginForm,
-    registryForm,
-    registry,
-    forgotPasswordForm
-}
+export { loginForm, registryForm, registry, forgotPasswordForm };
