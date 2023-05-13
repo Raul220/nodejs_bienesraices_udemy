@@ -5,6 +5,9 @@ import db from "./config/db.js"
 //Create app
 const app = express()
 
+// Enable form data reading
+app.use(express.urlencoded({extended: true}))
+
 // DB Conection
 try {
     await db.authenticate();
