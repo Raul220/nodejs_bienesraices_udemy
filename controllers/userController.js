@@ -11,7 +11,7 @@ const registryForm = (req, res) => {
 }
 
 const registry = (req, res) => {
-    console.log('registrando')
+    console.log(req.body)
 }
 
 const forgotPasswordForm = (req, res) => {
