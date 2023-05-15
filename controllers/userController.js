@@ -92,13 +92,23 @@ const confirm = async (req, res, next) => {
   //Verificar si el token es valido
   const user = await User.findOne({ where: { token } });
 
-  if (user) {
+  if (!user) {
     return res.render("auth/confirm-account", {
-      page: "Error al confirmar tu cuenta.",
+      page: "Error al confirmar tu cuenta",
       message: "Hubo un error al confirmar tu cuenta, intenta de nuevo.",
       error: true,
     });
   }
+
+  //Confirmar cuenta
+  user.token = null;
+  user.confirm = true;
+  await user.save();
+
+  return res.render("auth/confirm-account", {
+    page: "Cuenta confirmada",
+    message: "La cuenta ha sido confirmada correctamente.",
+  });
 };
 
 const forgotPasswordForm = (req, res) => {
