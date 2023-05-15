@@ -36,6 +36,7 @@ const registry = async (req, res) => {
   let result = validationResult(req);
 
   if (!result.isEmpty()) {
+    // console.log(result)
     return res.render("auth/registry", {
       page: "Crear cuenta",
       errors: result.array(),
@@ -65,7 +66,12 @@ const registry = async (req, res) => {
     password,
     token: genarateId(),
   });
-  res.json(user);
+  // res.json(user);
+
+  res.render('templates/message', {
+    page: "Cuenta creada correctamente",
+    message: "Le hemos enviado un email de confirmación, preciona el enlace."
+  })
 };
 
 const forgotPasswordForm = (req, res) => {
