@@ -12,6 +12,7 @@ const loginForm = (req, res) => {
 const registryForm = async (req, res) => {
   res.render("auth/registry", {
     page: "Crear cuenta",
+    csrfToken: req.csrfToken(),
   });
 };
 
@@ -41,6 +42,7 @@ const registry = async (req, res) => {
     return res.render("auth/registry", {
       page: "Crear cuenta",
       errors: result.array(),
+      csrfToken: req.csrfToken(),
       user: {
         name: name,
         email: email,
@@ -54,6 +56,7 @@ const registry = async (req, res) => {
   if (exist) {
     return res.render("auth/registry", {
       page: "Crear cuenta",
+      csrfToken: req.csrfToken(),
       errors: [{ msg: "Ya existe un usuario con ese correo." }],
       user: {
         name: name,
