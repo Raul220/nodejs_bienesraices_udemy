@@ -1,6 +1,7 @@
 import { check, validationResult } from "express-validator";
 import User from "../models/User.js";
 import { genarateId } from "../helpers/token.js";
+import { registryEmail } from "../helpers/emails.js";
 
 const loginForm = (req, res) => {
   res.render("auth/login", {
@@ -66,12 +67,20 @@ const registry = async (req, res) => {
     password,
     token: genarateId(),
   });
+
+  // Envia mail de confirmacion
+  registryEmail({
+    name: user.name,
+    email: user.email,
+    token: user.token,
+  });
+
   // res.json(user);
 
-  res.render('templates/message', {
+  res.render("templates/message", {
     page: "Cuenta creada correctamente",
-    message: "Le hemos enviado un email de confirmación, preciona el enlace."
-  })
+    message: "Le hemos enviado un email de confirmación, preciona el enlace.",
+  });
 };
 
 const forgotPasswordForm = (req, res) => {
