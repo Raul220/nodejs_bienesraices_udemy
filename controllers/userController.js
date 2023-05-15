@@ -83,10 +83,20 @@ const registry = async (req, res) => {
   });
 };
 
+/**
+ * Coprobar una cuenta
+ */
+const confirm = (req, res, next) => {
+  const { token } = req.params;
+  console.log(token);
+
+  next();
+};
+
 const forgotPasswordForm = (req, res) => {
   res.render("auth/forgot-password", {
     page: "Recuperar contraseña",
   });
 };
 
-export { loginForm, registryForm, registry, forgotPasswordForm };
+export { loginForm, registryForm, registry, confirm, forgotPasswordForm };
