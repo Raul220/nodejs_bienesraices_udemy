@@ -86,11 +86,19 @@ const registry = async (req, res) => {
 /**
  * Coprobar una cuenta
  */
-const confirm = (req, res, next) => {
+const confirm = async (req, res, next) => {
   const { token } = req.params;
-  console.log(token);
 
-  next();
+  //Verificar si el token es valido
+  const user = await User.findOne({ where: { token } });
+
+  if (user) {
+    return res.render("auth/confirm-account", {
+      page: "Error al confirmar tu cuenta.",
+      message: "Hubo un error al confirmar tu cuenta, intenta de nuevo.",
+      error: true,
+    });
+  }
 };
 
 const forgotPasswordForm = (req, res) => {
