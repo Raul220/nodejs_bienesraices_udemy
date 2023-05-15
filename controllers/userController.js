@@ -1,5 +1,6 @@
 import { check, validationResult } from "express-validator";
 import User from "../models/User.js";
+import { genarateId } from "../helpers/token.js";
 
 const loginForm = (req, res) => {
   res.render("auth/login", {
@@ -14,7 +15,6 @@ const registryForm = async (req, res) => {
 };
 
 const registry = async (req, res) => {
-
   const { name, email, password, confirm_password } = req.body;
 
   await check("name")
@@ -52,14 +52,19 @@ const registry = async (req, res) => {
   if (exist) {
     return res.render("auth/registry", {
       page: "Crear cuenta",
-      errors: [{msg: 'Ya existe un usuario con ese correo.'}],
+      errors: [{ msg: "Ya existe un usuario con ese correo." }],
       user: {
         name: name,
       },
     });
   }
 
-  const user = await User.create(req.body);
+  const user = await User.create({
+    name,
+    email,
+    password,
+    token: genarateId(),
+  });
   res.json(user);
 };
 
