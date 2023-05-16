@@ -1,16 +1,29 @@
-import express from 'express'
-import { forgotPasswordForm, loginForm, registryForm, registry, confirm, resetPassword } from '../controllers/userController.js'
+import express from "express";
+import {
+  forgotPasswordForm,
+  loginForm,
+  registryForm,
+  registry,
+  confirm,
+  resetPassword,
+  checkToken,
+  newPassword,
+} from "../controllers/userController.js";
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/login', loginForm)
+router.get("/login", loginForm);
 
-router.get('/registry', registryForm)
-router.post('/registry', registry)
+router.get("/registry", registryForm);
+router.post("/registry", registry);
 
-router.get("/confirm/:token", confirm)
+router.get("/confirm/:token", confirm);
 
-router.get('/forgot-password', forgotPasswordForm)
-router.post('/forgot-password', resetPassword)
+router.get("/forgot-password", forgotPasswordForm);
+router.post("/forgot-password", resetPassword);
 
-export default router
+//Almacenar ekl nuevo password
+router.get("/forgot-password/:token", checkToken);
+router.post("/forgot-password/:token", newPassword);
+
+export default router;

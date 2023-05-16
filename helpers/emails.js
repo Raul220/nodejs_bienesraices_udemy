@@ -27,4 +27,31 @@ const registryEmail = async (data) => {
   })
 };
 
-export { registryEmail };
+const forgotPasswordEmail = async (data) => {
+  const transport = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  const { name, email, token } = data;
+
+  // Enviar el email
+  await transport.sendMail({
+    from: "bienesraices.com",
+    to: email,
+    subject: "Reestablece tu contraseña en bienesraices.com",
+    text: "Reestablece tu contraseña en bienesraices.com",
+    html: `
+    <p>Hola ${name}, has solicitado cambiar tu contraseña en bienesraices.com</p>
+    <p>Has click en el siguiente enlace para cambiar tu contraseña:</p>
+    <a href="${process.env.BACKEND_URL}:${process.env.PORT ?? 3000}/auth/forgot-password/${token}">Reestablecer contraseña</a></p>
+    <p>Si tu no solicitaste el cambio de contraseña, puedes ignorar este mensaje</p>
+    `,
+  })
+};
+
+export { registryEmail, forgotPasswordEmail };

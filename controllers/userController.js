@@ -1,7 +1,7 @@
 import { check, validationResult } from "express-validator";
 import User from "../models/User.js";
 import { genarateId } from "../helpers/token.js";
-import { registryEmail } from "../helpers/emails.js";
+import { registryEmail, forgotPasswordEmail } from "../helpers/emails.js";
 
 const loginForm = (req, res) => {
   res.render("auth/login", {
@@ -82,7 +82,7 @@ const registry = async (req, res) => {
 
   res.render("templates/message", {
     page: "Cuenta creada correctamente",
-    message: "Le hemos enviado un email de confirmación, preciona el enlace.",
+    message: "Le hemos enviado un correo de confirmación, preciona el enlace.",
   });
 };
 
@@ -105,7 +105,7 @@ const confirm = async (req, res, next) => {
 
   //Confirmar cuenta
   user.token = null;
-  user.confirm = true;
+  user.confirmed = true;
   await user.save();
 
   return res.render("auth/confirm-account", {
@@ -149,7 +149,33 @@ const resetPassword = async (req, res) => {
       errors: [{ msg: "El correo no pertenece a ningún usuario" }],
     });
   }
+
+  //Generar un token
+  user.token = genarateId();
+  await user.save();
+
+  //Enviar el email
+  forgotPasswordEmail({
+    email: user.email,
+    name: user.name,
+    token: user.token,
+  })
+
+  //Mostrar mensaje de confirmacion
+  res.render("templates/message", {
+    page: "Reestablecer contraseña",
+    message: "Le hemos enviado un correo con las instrucciones para reestablecer su contraseña",
+  });
 };
+
+const checkToken = (req, res, next) => {
+  next()
+  
+}
+
+const newPassword = (req, res) => {
+
+}
 
 export {
   loginForm,
@@ -158,4 +184,6 @@ export {
   confirm,
   forgotPasswordForm,
   resetPassword,
+  checkToken,
+  newPassword
 };
