@@ -477,6 +477,9 @@ video {
   --tw-backdrop-sepia:  ;
 }
 @tailwind component;
+.m-auto {
+  margin: auto;
+}
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -514,6 +517,9 @@ video {
 }
 .max-w-md {
   max-width: 28rem;
+}
+.max-w-sm {
+  max-width: 24rem;
 }
 .cursor-pointer {
   cursor: pointer;

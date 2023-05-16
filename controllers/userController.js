@@ -159,23 +159,36 @@ const resetPassword = async (req, res) => {
     email: user.email,
     name: user.name,
     token: user.token,
-  })
+  });
 
   //Mostrar mensaje de confirmacion
   res.render("templates/message", {
     page: "Reestablecer contraseña",
-    message: "Le hemos enviado un correo con las instrucciones para reestablecer su contraseña",
+    message:
+      "Le hemos enviado un correo con las instrucciones para reestablecer su contraseña",
   });
 };
 
-const checkToken = (req, res, next) => {
-  next()
+const checkToken = async (req, res) => {
+  const { token } = req.params;
+
+  const user = await User.findOne({ where: { token } });
+  // console.log(user);
+
+  if(!user) {
+    return res.render("auth/confirm-account", {
+      page: "Reestablecer contraseña",
+      message: "Hubo un error al validar tu información.",
+      error: true,
+    });
+  }
+
+  //Mostrar formulario
+
   
-}
+};
 
-const newPassword = (req, res) => {
-
-}
+const newPassword = (req, res) => {};
 
 export {
   loginForm,
@@ -185,5 +198,5 @@ export {
   forgotPasswordForm,
   resetPassword,
   checkToken,
-  newPassword
+  newPassword,
 };
