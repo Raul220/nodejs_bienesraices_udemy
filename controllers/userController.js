@@ -117,7 +117,45 @@ const confirm = async (req, res, next) => {
 const forgotPasswordForm = (req, res) => {
   res.render("auth/forgot-password", {
     page: "Recuperar contraseña",
+    csrfToken: req.csrfToken(),
   });
 };
 
-export { loginForm, registryForm, registry, confirm, forgotPasswordForm };
+const resetPassword = async (req, res) => {
+  await check("email").isEmail().withMessage("Correo no valido.").run(req);
+
+  let result = validationResult(req);
+
+  if (!result.isEmpty()) {
+    // console.log(result)
+    return res.render("auth/forgot-password", {
+      page: "Recuperar contraseña",
+      csrfToken: req.csrfToken(),
+      errors: result.array(),
+    });
+  }
+
+  //Buscar usuario
+  const { email } = req.body;
+
+  const user = await User.findOne({ where: { email } });
+
+  // console.log(user)
+
+  if (!user) {
+    return res.render("auth/forgot-password", {
+      page: "Recuperar contraseña",
+      csrfToken: req.csrfToken(),
+      errors: [{ msg: "El correo no pertenece a ningún usuario" }],
+    });
+  }
+};
+
+export {
+  loginForm,
+  registryForm,
+  registry,
+  confirm,
+  forgotPasswordForm,
+  resetPassword,
+};
