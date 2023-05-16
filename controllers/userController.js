@@ -184,11 +184,16 @@ const checkToken = async (req, res) => {
   }
 
   //Mostrar formulario
+  res.render("auth/reset-password", {
+    page: "Reestablecer contraseña",
+    csrfToken: req.csrfToken(),
+  })
 
-  
 };
 
-const newPassword = (req, res) => {};
+const newPassword = (req, res) => {
+  console.log("Guardando ...")
+};
 
 export {
   loginForm,
