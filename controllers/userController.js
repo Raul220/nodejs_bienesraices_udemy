@@ -4,19 +4,66 @@ import User from "../models/User.js";
 import { genarateId } from "../helpers/token.js";
 import { registryEmail, forgotPasswordEmail } from "../helpers/emails.js";
 
+/**
+ * Renderiza la vista de login
+ * @param {*} req peticion
+ * @param {*} res respuesta
+ */
 const loginForm = (req, res) => {
   res.render("auth/login", {
     page: "Iniciar sesión",
+    csrfToken: req.csrfToken(),
   });
 };
 
+/**
+ * Inicia sesion de usuariio
+ * @param {*} req peticion
+ * @param {*} res respuesta
+ * @returns 
+ */
+const authenticate = async (req, res) => {
+  //Validacion
+  await check("email").isEmail().withMessage("Correo no valido.").run(req);
+  await check("password")
+    .notEmpty()
+    .withMessage("La contraseña es obligatoria.")
+    .run(req);
+
+  //Verificar que no hay errores en el form
+  let result = validationResult(req);
+
+  if (!result.isEmpty()) {
+    // console.log(result)
+    return res.render("auth/login", {
+      page: "Iniciar sesión",
+      errors: result.array(),
+      csrfToken: req.csrfToken(),
+    });
+  }
+
+  
+
+}
+
+/**
+ * Renderiza la pagina de registro
+ * @param {*} req peticion
+ * @param {*} res respuesta
+ */
 const registryForm = async (req, res) => {
-  res.render("auth/registry", {
+  res.render("auth/login", {
     page: "Crear cuenta",
     csrfToken: req.csrfToken(),
   });
 };
 
+/**
+ * Registra un nuevo usuariio
+ * @param {*} req peticion
+ * @param {*} res respuesta
+ * @returns pagina de error o login
+ */
 const registry = async (req, res) => {
   const { name, email, password, confirm_password } = req.body;
 
@@ -115,6 +162,12 @@ const confirm = async (req, res, next) => {
   });
 };
 
+/**
+ * Renderiza la vista de recuperacion de contraseña
+ * @param {*} req peticion
+ * @param {*} res respuesta
+ */
+
 const forgotPasswordForm = (req, res) => {
   res.render("auth/forgot-password", {
     page: "Recuperar contraseña",
@@ -122,6 +175,12 @@ const forgotPasswordForm = (req, res) => {
   });
 };
 
+/**
+ * Cambia la contraseña del usuario
+ * @param {*} req peticion
+ * @param {*} res respuesta
+ * @returns 
+ */
 const resetPassword = async (req, res) => {
   await check("email").isEmail().withMessage("Correo no valido.").run(req);
 
@@ -170,6 +229,12 @@ const resetPassword = async (req, res) => {
   });
 };
 
+/**
+ * Verifica si el token es correcto
+ * @param {*} req peticion
+ * @param {*} res respuesta
+ * @returns 
+ */
 const checkToken = async (req, res) => {
   const { token } = req.params;
 
@@ -191,6 +256,12 @@ const checkToken = async (req, res) => {
   });
 };
 
+/**
+ * Guarda el nuevo pass
+ * @param {*} req peticion
+ * @param {*} res respuesta
+ * @returns 
+ */
 const newPassword = async (req, res) => {
   //Validar nuevo pass
   await check("password")
@@ -230,6 +301,7 @@ const newPassword = async (req, res) => {
 
 export {
   loginForm,
+  authenticate,
   registryForm,
   registry,
   confirm,

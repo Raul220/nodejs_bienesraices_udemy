@@ -8,11 +8,13 @@ import {
   resetPassword,
   checkToken,
   newPassword,
+  authenticate,
 } from "../controllers/userController.js";
 
 const router = express.Router();
 
 router.get("/login", loginForm);
+router.post("/login", authenticate);
 
 router.get("/registry", registryForm);
 router.post("/registry", registry);
