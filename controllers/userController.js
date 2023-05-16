@@ -1,4 +1,5 @@
 import { check, validationResult } from "express-validator";
+import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import { genarateId } from "../helpers/token.js";
 import { registryEmail, forgotPasswordEmail } from "../helpers/emails.js";
@@ -26,7 +27,7 @@ const registry = async (req, res) => {
   await check("email").isEmail().withMessage("Correo no valido.").run(req);
   await check("password")
     .isLength({ min: 6 })
-    .withMessage("El password debe tener al menos 6 caracteres.")
+    .withMessage("La contraseña debe tener al menos 6 caracteres.")
     .run(req);
   if (confirm_password !== password) {
     await check("confirm_password")
@@ -175,7 +176,7 @@ const checkToken = async (req, res) => {
   const user = await User.findOne({ where: { token } });
   // console.log(user);
 
-  if(!user) {
+  if (!user) {
     return res.render("auth/confirm-account", {
       page: "Reestablecer contraseña",
       message: "Hubo un error al validar tu información.",
@@ -187,12 +188,44 @@ const checkToken = async (req, res) => {
   res.render("auth/reset-password", {
     page: "Reestablecer contraseña",
     csrfToken: req.csrfToken(),
-  })
-
+  });
 };
 
-const newPassword = (req, res) => {
-  console.log("Guardando ...")
+const newPassword = async (req, res) => {
+  //Validar nuevo pass
+  await check("password")
+    .isLength({ min: 6 })
+    .withMessage("La contraseña debe tener al menos 6 caracteres.")
+    .run(req);
+
+  let result = validationResult(req);
+
+  if (!result.isEmpty()) {
+    // console.log(result)
+    return res.render("auth/reset-password", {
+      page: "Reestablecer contraseña",
+      errors: result.array(),
+      csrfToken: req.csrfToken(),
+    });
+  }
+
+  const { token } = req.params;
+  const { password } = req.body;
+
+  //Identificar quien hace el cambio
+  const user = await User.findOne({ where: { token } });
+
+  //Hash pass
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(password, salt);
+  user.token = null;
+
+  await user.save();
+
+  res.render("auth/confirm-account", {
+    page: "Contraseña reestablecida",
+    message: "La contraseña se guardó correcamente.",
+  });
 };
 
 export {
