@@ -20,7 +20,7 @@ const loginForm = (req, res) => {
  * Inicia sesion de usuariio
  * @param {*} req peticion
  * @param {*} res respuesta
- * @returns 
+ * @returns
  */
 const authenticate = async (req, res) => {
   //Validacion
@@ -44,25 +44,37 @@ const authenticate = async (req, res) => {
 
   const { email, password } = req.body;
   //Verificar si el usuario existe
-  const user = await User.findOne({ where: { email } })
+  const user = await User.findOne({ where: { email } });
   if (!user) {
     return res.render("auth/login", {
       page: "Iniciar sesión",
-      errors: [{msg: "No existe ningun usuario con ese correo"}],
+      errors: [{ msg: "No existe ningun usuario con ese correo" }],
       csrfToken: req.csrfToken(),
     });
   }
 
   //Verificar si el usuario esta confirmado
-  if(!user.confirmed) {
+  if (!user.confirmed) {
     return res.render("auth/login", {
       page: "Iniciar sesión",
-      errors: [{msg: "Tu cuenta no ha sido confirmada"}],
+      errors: [{ msg: "Tu cuenta no ha sido confirmada" }],
       csrfToken: req.csrfToken(),
     });
   }
 
-}
+  //Revisar password
+  if (!user.checkPassword(password)) {
+    // console.log(user)
+    return res.render("auth/login", {
+      page: "Iniciar sesión",
+      errors: [{ msg: "La contraseña es incorrecta" }],
+      csrfToken: req.csrfToken(),
+      user: {
+        email: user.email,
+      },
+    });
+  }
+};
 
 /**
  * Renderiza la pagina de registro
@@ -197,7 +209,7 @@ const forgotPasswordForm = (req, res) => {
  * Cambia la contraseña del usuario
  * @param {*} req peticion
  * @param {*} res respuesta
- * @returns 
+ * @returns
  */
 const resetPassword = async (req, res) => {
   await check("email").isEmail().withMessage("Correo no valido.").run(req);
@@ -251,7 +263,7 @@ const resetPassword = async (req, res) => {
  * Verifica si el token es correcto
  * @param {*} req peticion
  * @param {*} res respuesta
- * @returns 
+ * @returns
  */
 const checkToken = async (req, res) => {
   const { token } = req.params;
@@ -278,7 +290,7 @@ const checkToken = async (req, res) => {
  * Guarda el nuevo pass
  * @param {*} req peticion
  * @param {*} res respuesta
- * @returns 
+ * @returns
  */
 const newPassword = async (req, res) => {
   //Validar nuevo pass
