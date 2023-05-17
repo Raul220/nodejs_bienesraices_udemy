@@ -42,7 +42,25 @@ const authenticate = async (req, res) => {
     });
   }
 
-  
+  const { email, password } = req.body;
+  //Verificar si el usuario existe
+  const user = await User.findOne({ where: { email } })
+  if (!user) {
+    return res.render("auth/login", {
+      page: "Iniciar sesión",
+      errors: [{msg: "No existe ningun usuario con ese correo"}],
+      csrfToken: req.csrfToken(),
+    });
+  }
+
+  //Verificar si el usuario esta confirmado
+  if(!user.confirmed) {
+    return res.render("auth/login", {
+      page: "Iniciar sesión",
+      errors: [{msg: "Tu cuenta no ha sido confirmada"}],
+      csrfToken: req.csrfToken(),
+    });
+  }
 
 }
 
@@ -52,7 +70,7 @@ const authenticate = async (req, res) => {
  * @param {*} res respuesta
  */
 const registryForm = async (req, res) => {
-  res.render("auth/login", {
+  res.render("auth/registry", {
     page: "Crear cuenta",
     csrfToken: req.csrfToken(),
   });
