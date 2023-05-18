@@ -1,3 +1,6 @@
+import Category from "../models/Category.js";
+import Price from "../models/Price.js";
+
 /**
  * Renderiza la vista de propiedades
  * @param {*} req peticion
@@ -15,10 +18,18 @@ const admin = (req, res) => {
  * @param {*} req peticion
  * @param {*} res respuesta
  */
-const create = (req, res) => {
+const create = async (req, res) => {
+  //Consultar modelo de precio y categoria
+  const [categories, prices] = await Promise.all([
+    Category.findAll(),
+    Price.findAll(),
+  ]);
+
   res.render("properties/create", {
     page: "Crear propiedad",
     bar: true,
+    categories,
+    prices,
   });
 };
 
