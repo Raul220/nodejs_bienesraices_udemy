@@ -1,9 +1,8 @@
 import { exit } from "node:process";
 import categories from "./categories.js";
-import Category from "../models/Category.js";
-import Price from "../models/Price.js";
 import db from "../config/db.js";
 import prices from "./prices.js";
+import { Price, Category } from "../models/index.js"
 
 const importData = async () => {
   try {
@@ -34,7 +33,7 @@ const deleteData = async () => {
     //   Price.destroy({ wherre: {}, truncate: true }),
     // ]);
 
-    await db.sync({force: true}); //Elimina las tablas completas
+    await db.sync({ force: true }); //Elimina las tablas completas
 
     console.log("Datos eliminados");
   } catch (error) {
