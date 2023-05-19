@@ -1,6 +1,6 @@
 (function () {
-  const lat = 40.446924;
-  const lng = -3.6525412;
+  const lat = document.querySelector('#lat').value || 40.446924;
+  const lng = document.querySelector('#lng').value || -3.6525412;
   const map = L.map("map").setView([lat, lng], 16);
   let marker;
 
@@ -36,11 +36,11 @@
         //Llenar los campos
         document.querySelector(".street").textContent =
           result?.address?.Address ?? "";
-        document.querySelector("#street").textContent =
+        document.querySelector("#street").value =
           result?.address?.Address ?? "";
-        document.querySelector("#lat").textContent =
+        document.querySelector("#lat").value =
           result?.latlng?.lat ?? "";
-        document.querySelector("#lng").textContent =
+        document.querySelector("#lng").value =
           result?.latlng?.lng ?? "";
       });
   });

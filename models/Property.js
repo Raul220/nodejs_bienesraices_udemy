@@ -23,6 +23,10 @@ const Property = db.define("properties", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  bathrooms: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
   street: {
     type: DataTypes.STRING(60),
     allowNull: false,
