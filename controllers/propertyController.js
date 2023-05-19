@@ -44,8 +44,6 @@ const saveProperty = async (req, res) => {
   //Resultado de la validacion
   let result = validationResult(req);
 
-  console.log("latitud:" + lat + "longitud:" + lng + "calle:" + street);
-
   if (!result.isEmpty()) {
     //Consultar modelo de precio y categoria
     const [categories, prices] = await Promise.all([
@@ -66,11 +64,23 @@ const saveProperty = async (req, res) => {
 
   //Crear registro
 
-  const { title, description, bedrooms, parking, bathrooms, street, lat, lng, price: priceId, category: categoryId } =
-    req.body;
+  const {
+    title,
+    description,
+    bedrooms,
+    parking,
+    bathrooms,
+    street,
+    lat,
+    lng,
+    price: priceId,
+    category: categoryId,
+  } = req.body;
+
+  const { id: userId } = req.user;
 
   try {
-    const savedProperty = await Property.create({
+    const storedProperty = await Property.create({
       title,
       description,
       bedrooms,
@@ -81,7 +91,11 @@ const saveProperty = async (req, res) => {
       lng,
       priceId,
       categoryId,
+      userId,
+      image: "",
     });
+
+    res.redirect(`/properties/add-image/${storedProperty.id}`)
   } catch (error) {
     console.log(error);
   }
