@@ -9,7 +9,6 @@ import { Price, Category, Property } from "../models/index.js";
 const admin = (req, res) => {
   res.render("properties/admin", {
     page: "Propiedades",
-    bar: true,
   });
 };
 
@@ -27,7 +26,6 @@ const create = async (req, res) => {
 
   res.render("properties/create", {
     page: "Crear propiedad",
-    bar: true,
     csrfToken: req.csrfToken(),
     categories,
     prices,
@@ -53,7 +51,6 @@ const saveProperty = async (req, res) => {
 
     res.render("properties/create", {
       page: "Crear propiedad",
-      bar: true,
       csrfToken: req.csrfToken(),
       categories,
       prices,
@@ -95,10 +92,16 @@ const saveProperty = async (req, res) => {
       image: "",
     });
 
-    res.redirect(`/properties/add-image/${storedProperty.id}`)
+    res.redirect(`/properties/add-image/${storedProperty.id}`);
   } catch (error) {
     console.log(error);
   }
 };
 
-export { admin, create, saveProperty };
+const addImage = async (req, res) => {
+  res.render("properties/add-image", {
+    page: "Agregar Imagen",
+  });
+};
+
+export { admin, create, saveProperty, addImage };

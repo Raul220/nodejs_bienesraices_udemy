@@ -1,6 +1,7 @@
 import express from "express";
 import { body } from "express-validator";
 import {
+  addImage,
   admin,
   create,
   saveProperty,
@@ -32,5 +33,6 @@ router.post(
   body("lng").notEmpty().withMessage("Ubica la propiedad en el mapa"),
   saveProperty
 );
+router.get("/properties/add-image/:id", protectRoute, addImage);
 
 export default router;
