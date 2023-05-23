@@ -99,9 +99,70 @@ const saveProperty = async (req, res) => {
 };
 
 const addImage = async (req, res) => {
+  const { id } = req.params;
+
+  //Validar que la propiedad exista
+  const property = await Property.findByPk(id);
+
+  if (!property) {
+    return res.redirect("/my-properties");
+  }
+
+  //Validar que la propiedad no este publicada
+
+  if (property.released) {
+    return res.redirect("/my-properties");
+  }
+
+  //Validar que la propiedad pertenece al usuario logueado
+
+  if (req.user.id.toString() !== property.userId.toString()) {
+    return res.redirect("/my-properties");
+  }
+
   res.render("properties/add-image", {
-    page: "Agregar Imagen",
+    page: `Agregar Imagen a ${property.title}`,
+    csrfToken: req.csrfToken(),
+    property,
   });
 };
 
-export { admin, create, saveProperty, addImage };
+const storageImage = async (req, res, next) => {
+  const { id } = req.params;
+
+  //Validar que la propiedad exista
+  const property = await Property.findByPk(id);
+
+  if (!property) {
+    return res.redirect("/my-properties");
+  }
+
+  //Validar que la propiedad no este publicada
+
+  if (property.released) {
+    return res.redirect("/my-properties");
+  }
+
+  //Validar que la propiedad pertenece al usuario logueado
+
+  if (req.user.id.toString() !== property.userId.toString()) {
+    return res.redirect("/my-properties");
+  }
+
+  try {
+    console.log(req.file);
+
+    //Almacenar imagen y publicar propiedad
+
+    property.image = req.file.filename;
+    property.released = 1;
+
+    await property.save();
+
+    next();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export { admin, create, saveProperty, addImage, storageImage };

@@ -5,8 +5,10 @@ import {
   admin,
   create,
   saveProperty,
+  storageImage,
 } from "../controllers/propertyController.js";
 import protectRoute from "../middleware/protectRoute.js";
+import upload from "../middleware/uploadImage.js";
 
 const router = express.Router();
 
@@ -34,5 +36,6 @@ router.post(
   saveProperty
 );
 router.get("/properties/add-image/:id", protectRoute, addImage);
+router.post("/properties/add-image/:id", protectRoute, upload.single("image"), storageImage);
 
 export default router;
