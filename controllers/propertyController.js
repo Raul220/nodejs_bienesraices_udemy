@@ -1,6 +1,6 @@
+import { unlink } from "node:fs/promises";
 import { validationResult } from "express-validator";
 import { Price, Category, Property } from "../models/index.js";
-import { async } from "rxjs";
 
 /**
  * Renderiza la vista de propiedades
@@ -21,6 +21,7 @@ const admin = async (req, res) => {
   res.render("properties/admin", {
     page: "Propiedades",
     properties,
+    csrfToken: req.csrfToken(),
   });
 };
 
@@ -222,6 +223,12 @@ const editProperty = async (req, res, net) => {
   });
 };
 
+/**
+ * Actualizar la propiedad
+ * @param {*} req
+ * @param {*} res
+ * @returns
+ */
 const updateProperty = async (req, res) => {
   //Verificar validacion
   let result = validationResult(req);
@@ -262,7 +269,6 @@ const updateProperty = async (req, res) => {
   //Salvar
 
   try {
-
     const {
       title,
       description,
@@ -286,16 +292,44 @@ const updateProperty = async (req, res) => {
       lat,
       lng,
       priceId,
-      categoryId
-    })
+      categoryId,
+    });
 
     await property.save();
 
-    res.redirect("my-properties")
-
+    res.redirect("my-properties");
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
+};
+
+const deleteProperty = async (req, res) => {
+  console.log("deleting");
+
+  //Extraer id
+  const { id } = req.params;
+
+  //Validar que la propiedad exista
+
+  const property = await Property.findByPk(id);
+
+  if (!property) {
+    return res.redirect("/my-properties");
+  }
+
+  //Check quien visita la url es quien la creo
+  if (property.userId.toString() !== req.user.id.toString()) {
+    return res.redirect("/my-properties");
+  }
+
+  //Eliminar la imgen asociada
+  await unlink(`public/uploads/${property.image}`)
+
+  console.log(`Se elimino la imagen: ${property.image}`)
+
+  //Eliminar prop
+  await property.destroy();
+  res.redirect("/my-properties");
 };
 
 export {
@@ -306,4 +340,5 @@ export {
   storageImage,
   editProperty,
   updateProperty,
+  deleteProperty,
 };
