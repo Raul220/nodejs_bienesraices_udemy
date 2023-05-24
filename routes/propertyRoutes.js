@@ -4,6 +4,7 @@ import {
   addImage,
   admin,
   create,
+  deleteProperty,
   editProperty,
   saveProperty,
   storageImage,
@@ -67,5 +68,7 @@ router.post(
   body("lng").notEmpty().withMessage("Ubica la propiedad en el mapa"),
   updateProperty
 );
+
+router.post("/properties/delete/:id", protectRoute, deleteProperty);
 
 export default router;
