@@ -8,16 +8,15 @@ import { async } from "rxjs";
  * @param {*} res respuesta
  */
 const admin = async (req, res) => {
-
   const { id } = req.user;
 
   const properties = await Property.findAll({
-    where: { userId : id },
+    where: { userId: id },
     include: [
-      { model: Category, as: 'category' },
-      { model: Price, as: 'price' }
-    ]
-  })
+      { model: Category, as: "category" },
+      { model: Price, as: "price" },
+    ],
+  });
 
   res.render("properties/admin", {
     page: "Propiedades",
@@ -140,6 +139,13 @@ const addImage = async (req, res) => {
   });
 };
 
+/**
+ * Store image of a property
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ * @returns
+ */
 const storageImage = async (req, res, next) => {
   const { id } = req.params;
 
@@ -178,4 +184,126 @@ const storageImage = async (req, res, next) => {
   }
 };
 
-export { admin, create, saveProperty, addImage, storageImage };
+/**
+ * Edit a property form
+ * @param {*} req
+ * @param {*} res
+ * @param {*} net
+ */
+const editProperty = async (req, res, net) => {
+  //Extraer id
+  const { id } = req.params;
+
+  //Validar que la propiedad exista
+
+  const property = await Property.findByPk(id);
+
+  if (!property) {
+    return res.redirect("/my-properties");
+  }
+
+  //Check quien visita la url es quien la creo
+  if (property.userId.toString() !== req.user.id.toString()) {
+    return res.redirect("/my-properties");
+  }
+
+  //Consultar modelo de precio y categoria
+  const [categories, prices] = await Promise.all([
+    Category.findAll(),
+    Price.findAll(),
+  ]);
+
+  res.render("properties/edit", {
+    page: `Editar propiedad: ${property.title}`,
+    csrfToken: req.csrfToken(),
+    categories,
+    prices,
+    data: property,
+  });
+};
+
+const updateProperty = async (req, res) => {
+  //Verificar validacion
+  let result = validationResult(req);
+
+  if (!result.isEmpty()) {
+    //Consultar modelo de precio y categoria
+    const [categories, prices] = await Promise.all([
+      Category.findAll(),
+      Price.findAll(),
+    ]);
+
+    return res.render("properties/edit", {
+      page: `Editar propiedad`,
+      csrfToken: req.csrfToken(),
+      categories,
+      prices,
+      data: req.body,
+      errors: result.array(),
+    });
+  }
+
+  //Extraer id
+  const { id } = req.params;
+
+  //Validar que la propiedad exista
+
+  const property = await Property.findByPk(id);
+
+  if (!property) {
+    return res.redirect("/my-properties");
+  }
+
+  //Check quien visita la url es quien la creo
+  if (property.userId.toString() !== req.user.id.toString()) {
+    return res.redirect("/my-properties");
+  }
+
+  //Salvar
+
+  try {
+
+    const {
+      title,
+      description,
+      bedrooms,
+      parking,
+      bathrooms,
+      street,
+      lat,
+      lng,
+      price: priceId,
+      category: categoryId,
+    } = req.body;
+
+    property.set({
+      title,
+      description,
+      bedrooms,
+      parking,
+      bathrooms,
+      street,
+      lat,
+      lng,
+      priceId,
+      categoryId
+    })
+
+    await property.save();
+
+    res.redirect("my-properties")
+
+  } catch (error) {
+    console.log(error)
+  }
+};
+
+export {
+  admin,
+  create,
+  saveProperty,
+  addImage,
+  storageImage,
+  editProperty,
+  updateProperty,
+};
