@@ -7,6 +7,7 @@ import {
   deleteProperty,
   editProperty,
   saveProperty,
+  showProperty,
   storageImage,
   updateProperty,
 } from "../controllers/propertyController.js";
@@ -70,5 +71,8 @@ router.post(
 );
 
 router.post("/properties/delete/:id", protectRoute, deleteProperty);
+
+//Area publica
+router.get("/property/:id", showProperty);
 
 export default router;

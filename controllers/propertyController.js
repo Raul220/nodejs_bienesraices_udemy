@@ -323,13 +323,33 @@ const deleteProperty = async (req, res) => {
   }
 
   //Eliminar la imgen asociada
-  await unlink(`public/uploads/${property.image}`)
+  await unlink(`public/uploads/${property.image}`);
 
-  console.log(`Se elimino la imagen: ${property.image}`)
+  console.log(`Se elimino la imagen: ${property.image}`);
 
   //Eliminar prop
   await property.destroy();
   res.redirect("/my-properties");
+};
+
+const showProperty = async (req, res) => {
+  const { id } = req.params;
+
+  const property = await Property.findByPk(id, {
+    include: [
+      { model: Category, as: "category" },
+      { model: Price, as: "price" },
+    ],
+  });
+
+  if (!property) {
+    return res.redirect("/404");
+  }
+
+  res.render("properties/detail", {
+    page: property.title,
+    property,
+  });
 };
 
 export {
@@ -341,4 +361,5 @@ export {
   editProperty,
   updateProperty,
   deleteProperty,
+  showProperty,
 };
