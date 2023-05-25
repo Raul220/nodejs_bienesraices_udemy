@@ -8,21 +8,54 @@ import { Price, Category, Property } from "../models/index.js";
  * @param {*} res respuesta
  */
 const admin = async (req, res) => {
-  const { id } = req.user;
+  //leer queryString
 
-  const properties = await Property.findAll({
-    where: { userId: id },
-    include: [
-      { model: Category, as: "category" },
-      { model: Price, as: "price" },
-    ],
-  });
+  const { page: currentPage } = req.query;
+  console.log(currentPage);
 
-  res.render("properties/admin", {
-    page: "Propiedades",
-    properties,
-    csrfToken: req.csrfToken(),
-  });
+  const regExp = /^[1-9]$/;
+
+  if (!regExp.test(currentPage)) {
+    return res.redirect("/my-properties?page=1");
+  }
+
+  try {
+    const { id } = req.user;
+
+    //limites y offset para el paginador
+    const limit = 10;
+    const offset = currentPage * limit - limit;
+
+    const [properties, total] = await Promise.all([
+      Property.findAll({
+        limit,
+        offset,
+        where: { userId: id },
+        include: [
+          { model: Category, as: "category" },
+          { model: Price, as: "price" },
+        ],
+      }),
+      Property.count({
+        where: {
+          userId: id,
+        },
+      }),
+    ]);
+
+    res.render("properties/admin", {
+      page: "Propiedades",
+      properties,
+      csrfToken: req.csrfToken(),
+      pages: Math.ceil(total/limit),
+      currentPage: Number(currentPage),
+      total,
+      limit,
+      offset,
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 /**
