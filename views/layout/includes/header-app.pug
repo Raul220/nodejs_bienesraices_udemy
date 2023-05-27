@@ -4,6 +4,13 @@ header.bg-indigo-600.p-4
             span.font-normal Raices 
         
         nav(class="my-5 text-sm md:flex md:items-center md:gap-3 font-bold text-white hidden")
-            a(href="") Propiedades
-            a(href="") Perfil
-            a(href="" class=("bg-indigo-800 py-2 px-10 rounded-lg")) Cerrar sesión
+            a(href="/auth/registry") Crear cuenta
+            a(href="/auth/login") Iniciar Sesión
+
+div(class="bg-indigo-700 py-5 hidden lg:block px-4")
+    div(class="container mx-auto flex justify-between")
+        a(href="/category/1" class="text-sm font-bold uppercase text-white") Casas
+        a(href="/category/2" class="text-sm font-bold uppercase text-white") Departamentos
+        a(href="/category/3" class="text-sm font-bold uppercase text-white") Bodegas
+        a(href="/category/4" class="text-sm font-bold uppercase text-white") Terrenos
+        a(href="/category/5" class="text-sm font-bold uppercase text-white") Cabañas
