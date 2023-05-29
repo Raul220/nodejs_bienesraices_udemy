@@ -381,7 +381,8 @@ const showProperty = async (req, res) => {
 
   res.render("properties/detail", {
     page: property.title,
-    property,
+    property,    
+    csrfToken: req.csrfToken(),
   });
 };
 
