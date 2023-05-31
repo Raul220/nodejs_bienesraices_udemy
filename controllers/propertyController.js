@@ -1,6 +1,7 @@
 import { unlink } from "node:fs/promises";
 import { validationResult } from "express-validator";
-import { Price, Category, Property } from "../models/index.js";
+import { Price, Category, Property, Message, User } from "../models/index.js";
+import { isSeller, formatDate } from "../helpers/index.js";
 
 /**
  * Renderiza la vista de propiedades
@@ -34,6 +35,7 @@ const admin = async (req, res) => {
         include: [
           { model: Category, as: "category" },
           { model: Price, as: "price" },
+          { model: Message, as: "messages" },
         ],
       }),
       Property.count({
@@ -47,7 +49,7 @@ const admin = async (req, res) => {
       page: "Propiedades",
       properties,
       csrfToken: req.csrfToken(),
-      pages: Math.ceil(total/limit),
+      pages: Math.ceil(total / limit),
       currentPage: Number(currentPage),
       total,
       limit,
@@ -203,7 +205,7 @@ const storageImage = async (req, res, next) => {
   }
 
   try {
-    console.log(req.file);
+    // console.log(req.file);
 
     //Almacenar imagen y publicar propiedad
 
@@ -337,7 +339,7 @@ const updateProperty = async (req, res) => {
 };
 
 const deleteProperty = async (req, res) => {
-  console.log("deleting");
+  // console.log("deleting");
 
   //Extraer id
   const { id } = req.params;
@@ -381,8 +383,91 @@ const showProperty = async (req, res) => {
 
   res.render("properties/detail", {
     page: property.title,
-    property,    
+    property,
     csrfToken: req.csrfToken(),
+    user: req.user,
+    isSeller: isSeller(req.user?.id, property?.userId),
+  });
+};
+
+const sendMessage = async (req, res) => {
+  const { id } = req.params;
+
+  const property = await Property.findByPk(id, {
+    include: [
+      { model: Category, as: "category" },
+      { model: Price, as: "price" },
+    ],
+  });
+
+  if (!property) {
+    return res.redirect("/404");
+  }
+
+  //Renderizar errores
+  let result = validationResult(req);
+
+  if (!result.isEmpty()) {
+    res.render("properties/detail", {
+      page: property.title,
+      csrfToken: req.csrfToken(),
+      errors: result.array(),
+      property,
+      user: req.user,
+      isSeller: isSeller(req.user?.id, property?.userId),
+    });
+  }
+
+  //Almacenar Modelo
+  const { message } = req.body;
+  const { id: propertyId } = req.params;
+  const { id: userId } = req.user;
+
+  await Message.create({
+    message,
+    propertyId,
+    userId,
+  });
+
+  res.render("properties/detail", {
+    page: property.title,
+    property,
+    csrfToken: req.csrfToken(),
+    user: req.user,
+    isSeller: isSeller(req.user?.id, property?.userId),
+    send: true,
+  });
+};
+
+const readMessages = async (req, res) => {
+  //Extraer id
+  const { id } = req.params;
+
+  //Validar que la propiedad exista
+
+  const property = await Property.findByPk(id, {
+    include: [
+      {
+        model: Message,
+        as: "messages",
+        include: [{ model: User.scope('removePassword'), as: "user" }],
+      },
+    ],
+  });
+
+  if (!property) {
+    return res.redirect("/my-properties");
+  }
+
+  //Check quien visita la url es quien la creo
+  if (property.userId.toString() !== req.user.id.toString()) {
+    return res.redirect("/my-properties");
+  }
+
+  res.render("properties/messages", {
+    page: "Mensajes",
+    messages: property.messages,
+    formatDate,
   });
 };
 
@@ -396,4 +481,6 @@ export {
   updateProperty,
   deleteProperty,
   showProperty,
+  sendMessage,
+  readMessages,
 };

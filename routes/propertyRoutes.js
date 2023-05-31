@@ -6,13 +6,16 @@ import {
   create,
   deleteProperty,
   editProperty,
+  readMessages,
   saveProperty,
+  sendMessage,
   showProperty,
   storageImage,
   updateProperty,
 } from "../controllers/propertyController.js";
 import protectRoute from "../middleware/protectRoute.js";
 import upload from "../middleware/uploadImage.js";
+import identifyUser from "../middleware/identifyUser.js";
 
 const router = express.Router();
 
@@ -73,6 +76,16 @@ router.post(
 router.post("/properties/delete/:id", protectRoute, deleteProperty);
 
 //Area publica
-router.get("/property/:id", showProperty);
+router.get("/property/:id", identifyUser, showProperty);
+
+//Almacenar mensajes
+router.post(
+  "/property/:id",
+  identifyUser,
+  body("message").isLength({ min: 10 }).withMessage("Es muy corto"),
+  sendMessage
+);
+
+router.get("/messages/:id", protectRoute, readMessages);
 
 export default router;
