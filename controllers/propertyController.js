@@ -377,7 +377,7 @@ const showProperty = async (req, res) => {
     ],
   });
 
-  if (!property) {
+  if (!property || !property.released) {
     return res.redirect("/404");
   }
 
@@ -439,6 +439,12 @@ const sendMessage = async (req, res) => {
   });
 };
 
+/**
+ * Leer los mensajes
+ * @param {*} req
+ * @param {*} res
+ * @returns
+ */
 const readMessages = async (req, res) => {
   //Extraer id
   const { id } = req.params;
@@ -450,7 +456,7 @@ const readMessages = async (req, res) => {
       {
         model: Message,
         as: "messages",
-        include: [{ model: User.scope('removePassword'), as: "user" }],
+        include: [{ model: User.scope("removePassword"), as: "user" }],
       },
     ],
   });
@@ -471,6 +477,38 @@ const readMessages = async (req, res) => {
   });
 };
 
+/**
+ * Cambiar el estado de la propiedad
+ * @param {*} req
+ * @param {*} res
+ */
+const changeState = async (req, res) => {
+  //Extraer id
+  const { id } = req.params;
+
+  //Validar que la propiedad exista
+
+  const property = await Property.findByPk(id);
+
+  if (!property) {
+    return res.redirect("/my-properties");
+  }
+
+  //Check quien visita la url es quien la creo
+  if (property.userId.toString() !== req.user.id.toString()) {
+    return res.redirect("/my-properties");
+  }
+
+  //Actualizar
+  property.released = !property.released;
+
+  await property.save();
+
+  res.json({
+    result: true,
+  });
+};
+
 export {
   admin,
   create,
@@ -483,4 +521,5 @@ export {
   showProperty,
   sendMessage,
   readMessages,
+  changeState,
 };

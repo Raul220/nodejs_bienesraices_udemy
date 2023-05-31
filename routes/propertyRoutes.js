@@ -3,6 +3,7 @@ import { body } from "express-validator";
 import {
   addImage,
   admin,
+  changeState,
   create,
   deleteProperty,
   editProperty,
@@ -74,6 +75,11 @@ router.post(
 );
 
 router.post("/properties/delete/:id", protectRoute, deleteProperty);
+
+router.put("/properties/:id",
+  protectRoute,
+  changeState
+)
 
 //Area publica
 router.get("/property/:id", identifyUser, showProperty);
