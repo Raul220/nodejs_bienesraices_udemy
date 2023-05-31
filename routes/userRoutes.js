@@ -9,12 +9,16 @@ import {
   checkToken,
   newPassword,
   authenticate,
+  closeSession,
 } from "../controllers/userController.js";
 
 const router = express.Router();
 
 router.get("/login", loginForm);
 router.post("/login", authenticate);
+
+//Cerrar secion
+router.post('/close-session', closeSession)
 
 router.get("/registry", registryForm);
 router.post("/registry", registry);

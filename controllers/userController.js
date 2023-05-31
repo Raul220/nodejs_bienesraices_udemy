@@ -341,6 +341,10 @@ const newPassword = async (req, res) => {
   });
 };
 
+const closeSession = async (req, res) => {
+  return res.clearCookie('_token').status(200).redirect('/auth/login')
+}
+
 export {
   loginForm,
   authenticate,
@@ -351,4 +355,5 @@ export {
   resetPassword,
   checkToken,
   newPassword,
+  closeSession
 };
